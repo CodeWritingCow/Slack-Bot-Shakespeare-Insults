@@ -17,6 +17,12 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Dependency directories
+node_modules
+
+# Slack bot API token
+token.js
+
 # =========================
 # Operating System Files
 # =========================

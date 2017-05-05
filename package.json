@@ -1,0 +1,23 @@
+{
+  "name": "slack-bot-shakespeare-insults",
+  "version": "1.0.0",
+  "description": "Slack Bot that hurls Shakespearean insults",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Slack",
+    "Node.js",
+    "bots",
+    "Shakespeare",
+    "comedy",
+    "insults"
+  ],
+  "author": "Gary Pang",
+  "license": "ISC",
+  "dependencies": {
+    "botkit": "^0.5.4",
+    "shakespeare-insult": "^1.0.0"
+  }
+}
