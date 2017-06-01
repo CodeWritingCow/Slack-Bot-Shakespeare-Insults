@@ -63,29 +63,34 @@ This bot demonstrates many of the core features of Botkit:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-
+/*
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.exit(1);
-}
+}*/
 
-var Botkit = require('./lib/Botkit.js');
+var Botkit = require('botkit');
 var os = require('os');
+var shakespeare = require('shakespeare-insult'); // load Shakespeare insult NPM library
 
 var controller = Botkit.slackbot({
     debug: true,
 });
 
 var bot = controller.spawn({
-    token: process.env.token
+    token: process.env.BOT_API_KEY || require('./token'),
+    send_via_rtm: true // this enables bot.replyWithTyping()
 }).startRTM();
 
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
 
-    bot.api.reactions.add({
+    bot.replyWithTyping(message, 'Thou art a ' + shakespeare.random() + '!' + ' :middle_finger:');
+
+    /*bot.api.reactions.add({
         timestamp: message.ts,
         channel: message.channel,
-        name: 'robot_face',
+        // name: 'robot_face',
+        name: 'middle_finger',
     }, function(err, res) {
         if (err) {
             bot.botkit.log('Failed to add emoji reaction :(', err);
@@ -99,7 +104,7 @@ controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', funct
         } else {
             bot.reply(message, 'Hello.');
         }
-    });
+    });*/
 });
 
 controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_mention,mention', function(bot, message) {
@@ -112,7 +117,8 @@ controller.hears(['call me (.*)', 'my name is (.*)'], 'direct_message,direct_men
         }
         user.name = name;
         controller.storage.users.save(user, function(err, id) {
-            bot.reply(message, 'Got it. I will call you ' + user.name + ' from now on.');
+            // bot.reply(message, 'Got it. I will call you ' + user.name + ' from now on.');
+            bot.reply(message, user.name + ', thou art a ' + shakespeare.random() + '!');
         });
     });
 });
@@ -121,13 +127,13 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
 
     controller.storage.users.get(message.user, function(err, user) {
         if (user && user.name) {
-            bot.reply(message, 'Your name is ' + user.name);
+            bot.reply(message, 'Thy name is ' + user.name + ', and thou art a ' + shakespeare.random() + '!');
         } else {
             bot.startConversation(message, function(err, convo) {
                 if (!err) {
-                    convo.say('I do not know your name yet!');
-                    convo.ask('What should I call you?', function(response, convo) {
-                        convo.ask('You want me to call you `' + response.text + '`?', [
+                    convo.say('I do not know thy name yet, thou ' + shakespeare.random() + '!');
+                    convo.ask('What shall I call thee?', function(response, convo) {
+                        convo.ask('Thou want me to call you `' + response.text + '`?', [
                             {
                                 pattern: 'yes',
                                 callback: function(response, convo) {
@@ -158,7 +164,7 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
 
                     convo.on('end', function(convo) {
                         if (convo.status == 'completed') {
-                            bot.reply(message, 'OK! I will update my dossier...');
+                            bot.reply(message, 'Very well! I shall inscribe thy name upon my portfolio...');
 
                             controller.storage.users.get(message.user, function(err, user) {
                                 if (!user) {
@@ -168,7 +174,7 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
                                 }
                                 user.name = convo.extractResponse('nickname');
                                 controller.storage.users.save(user, function(err, id) {
-                                    bot.reply(message, 'Got it. I will call you ' + user.name + ' from now on.');
+                                    bot.reply(message, 'I shall call thee ' + user.name + ' from now on, thou ' + shakespeare.random() + '!');
                                 });
                             });
 
@@ -176,7 +182,7 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
 
                         } else {
                             // this happens if the conversation ended prematurely for some reason
-                            bot.reply(message, 'OK, nevermind!');
+                            bot.reply(message, 'Thou art a ' + shakespeare.random() + '!');
                         }
                     });
                 }
@@ -224,6 +230,11 @@ controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your na
             ':robot_face: I am a bot named <@' + bot.identity.name +
              '>. I have been running for ' + uptime + ' on ' + hostname + '.');
 
+    });
+
+controller.hears(['bite me', 'damn you', 'you suck'], 
+    'direct_message,direct_mention,mention', function(bot, message) {
+        bot.reply(message, 'I bite my thumb at thee! :middle_finger: :middle_finger:');
     });
 
 function formatUptime(uptime) {
