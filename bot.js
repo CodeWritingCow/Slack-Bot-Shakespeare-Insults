@@ -12,6 +12,10 @@ var controller = Botkit.slackbot({
     debug: true,
 });
 
+/* Load Slack token for bot. You need to make a new file called 'token.js' in your project's root directory.
+ Token.js just needs one line: 
+ module.exports = 'YOUR_SLACK_BOT_TOKEN';
+ */
 var bot = controller.spawn({
     token: process.env.BOT_API_KEY || require('./token'),
     send_via_rtm: true // this enables bot.replyWithTyping()
